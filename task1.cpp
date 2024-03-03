@@ -1,49 +1,50 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 
 using namespace std;
 
-int main() {
-    string start, end;
-    int start_hours, start_minutes, end_hours, end_minutes;
+// Function to convert time string to minutes
+int timeToMinutes(string timeStr) {
+    int hours, minutes;
     char colon;
-    string am_pm;
+    char am_pm;
+    stringstream ss(timeStr);
+    ss >> hours >> colon >> minutes >> am_pm;
+
+    if (am_pm == 'p' && hours != 12) {
+        hours += 12;
+    } else if (am_pm == 'a' && hours == 12) {
+        hours = 0;
+    }
+
+    return hours * 60 + minutes;
+}
+
+int main() {
+    string startTime, endTime;
 
     // Input start time
-    cout << "Enter start time (hh:mmAM/PM): ";
-    cin >> start_hours >> colon >> start_minutes >> am_pm;
-
-    // Convert start time to 24-hour format
-    if (am_pm == "PM" && start_hours != 12) {
-        start_hours += 12;
-    } else if (am_pm == "AM" && start_hours == 12) {
-        start_hours = 0;
-    }
+    cout << "Enter start time (hh:mm am/pm): ";
+    getline(cin, startTime);
 
     // Input end time
-    cout << "Enter end time (hh:mmAM/PM): ";
-    cin >> end_hours >> colon >> end_minutes >> am_pm;
+    cout << "Enter end time (hh:mm am/pm): ";
+    getline(cin, endTime);
 
-    // Convert end time to 24-hour format
-    if (am_pm == "PM" && end_hours != 12) {
-        end_hours += 12;
-    } else if (am_pm == "AM" && end_hours == 12) {
-        end_hours = 0;
+    // Convert time strings to minutes
+    int startMinutes = timeToMinutes(startTime);
+    int endMinutes = timeToMinutes(endTime);
+
+    // Calculate difference in minutes
+    int totalMinutes = endMinutes - startMinutes;
+
+    if (totalMinutes < 0) {
+        totalMinutes += 24 * 60; // Add a day's worth of minutes if end time is before start time
     }
 
-    // Calculate total minutes
-    int total_minutes_start = start_hours * 60 + start_minutes;
-    int total_minutes_end = end_hours * 60 + end_minutes;
-    int total_minutes = total_minutes_end - total_minutes_start;
-
-    // If end time is before start time, add a day
-    if (total_minutes < 0) {
-        total_minutes += 24 * 60;
-    }
-
-    // Output total minutes
-    cout << "Minutes between " << start_hours << ":" << start_minutes << am_pm << " to " 
-         << end_hours << ":" << end_minutes << am_pm << ": " << total_minutes << endl;
+    cout << "Total minutes between the two times: " << totalMinutes << " minutes" << endl;
 
     return 0;
 }
+
